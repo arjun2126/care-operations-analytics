@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: care_analytics_db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-care_analytics}
+      POSTGRES_USER: ${DATABASE_USER:-care_analyst}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-care_analyst_local}
+    ports:
+      - "5432:5432"
+    volumes:
+      - care_analytics_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-care_analyst} -d ${DATABASE_NAME:-care_analytics}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  care_analytics_data:
