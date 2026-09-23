@@ -21,3 +21,4 @@ data/processed/risk_model*
 data/processed/risk_scaler*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+.DS_Store
