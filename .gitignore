@@ -16,5 +16,8 @@ logs/**
 data/raw/*.csv
 data/processed/*.csv
 data/processed/*.csv.gz
+data/processed/*.joblib
+data/processed/risk_model*
+data/processed/risk_scaler*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
