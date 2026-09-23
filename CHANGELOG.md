@@ -8,7 +8,7 @@
 - **Data quality validation**: 53 reusable validation checks with audit logging. Invalid records are separated and logged, never silently deleted.
 - **ETL pipeline**: Python transformation pipeline producing cleaned, validated CSV files from raw synthetic data.
 - **PostgreSQL-ready star schema**: Dimensional model with 5 dimensions (`dim_date`, `dim_client`, `dim_worker`, `dim_funder`, `dim_service`) and 4 fact tables (`fact_service_visit`, `fact_claim`, `fact_reconciliation_exception`, `fact_funding_allocation`).
-- **SQL analysis**: 8 production-style analysis queries and 8 dashboard-ready analytics views.
+- **SQL analysis**: 8 analysis queries and 8 dashboard-ready analytics views.
 - **CSV-first Streamlit dashboard**: Four interactive pages (Executive Overview, Funding Health, Operations, Exceptions and Risk) using processed CSV data with no database requirement.
 - **Interpretable claim-review risk model**: Logistic Regression pipeline with StandardScaler and OneHotEncoder preprocessing, train/test split, class weighting, and risk bands (Low/Medium/High).
 - **Automated testing**: 46 pytest tests covering data quality, transformation, analytics metrics, risk model, and data access.

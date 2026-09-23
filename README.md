@@ -1,6 +1,6 @@
 # Care Operations Analytics Command Center
 
-**An end-to-end analytics solution for a fictional Canadian care-services provider that identifies funding risk, claim-review priorities, operational bottlenecks, and unresolved reconciliation exceptions.**
+**An analytics project for a fictional Canadian care-services provider. It reports funding use, flags claims that may need manual review, and surfaces operational problems like late documentation and aging exceptions.**
 
 > **All records are fictional and generated solely for portfolio demonstration. No real personal, healthcare, client, employee, or company data is used.**
 
@@ -37,8 +37,8 @@ A fictional Canadian care-services provider delivers in-home services funded by 
 - PostgreSQL-ready star schema and SQL analysis
 - CSV-first Streamlit dashboard (no database required)
 - Funding, operations, and exceptions analysis
-- Interpretable claim-review risk prioritization
-- Consulting-style executive recommendations
+- Interpretable claim-review risk score for prioritizing manual review
+- An executive summary with prioritized findings
 - Automated test coverage and CI configuration
 
 ---
@@ -151,12 +151,14 @@ docker compose ps
 
 ## Dashboard Walkthrough
 
-| Page | Question Answered | Decision Supported |
-|------|-------------------|--------------------|
-| **Executive Overview** | Where is leadership attention needed first? | Identify priority areas for leadership |
-| **Funding Health** | Which allocations are approaching budget limits? | Prioritize proactive funding review |
-| **Operations** | Where are staffing and documentation bottlenecks? | Target staffing and documentation interventions |
-| **Exceptions & Risk** | Which claims and exceptions should analysts review first? | Triage highest-value and highest-risk claims |
+Each page answers one question with a few charts and a filtered table.
+
+| Page | What it shows |
+|------|---------------|
+| **Executive Overview** | Overall KPIs and monthly trends, so leadership can quickly spot where attention is needed. |
+| **Funding Health** | How much of each funder allocation has been spent, flagging anything at or above 90%. |
+| **Operations** | Worker capacity, documentation delays, and visit status across cities and service types. |
+| **Exceptions & Risk** | Aging exceptions and a risk-scored claims list, so analysts know what to review first. |
 
 ---
 
@@ -208,7 +210,7 @@ care-operations-analytics/
 
 ## Documentation
 
-- [Executive Summary](docs/executive_summary.md) — Evidence-based consulting findings
+- [Executive Summary](docs/executive_summary.md) — Prioritized findings and recommendations
 - [Model Card](docs/model_card.md) — Risk model purpose, features, limitations
 - [Dashboard Guide](docs/dashboard_guide.md) — Setup, pages, troubleshooting
 - [Data Dictionary](docs/data_dictionary.md) — All fields and relationships
@@ -236,8 +238,6 @@ See [docs/project_roadmap.md](docs/project_roadmap.md) for details.
 
 ---
 
-## Data Disclaimer
+## Risk-Model Caveat
 
-**All data in this project is entirely synthetic and fictional.** No real personal, healthcare, client, employee, or company data is used or generated. All names, cities, and identifiers are fictional creations using the Faker library configured for Canadian locale. This project is intended for portfolio demonstration and analytics education purposes only.
-
-The claim risk model is a synthetic-data prioritization aid. It does not automatically approve, deny, or determine care decisions. Model metrics are modest and reflect the limitations of synthetic data.
+The claim-review risk score is a triage aid trained on synthetic data. It does not automatically approve, deny, or determine care decisions. Metrics are modest and reflect the limitations of synthetic data.

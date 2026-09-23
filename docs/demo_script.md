@@ -6,41 +6,41 @@
 
 **Opening (30 seconds)**
 
-"Hello, and thank you for taking the time to review my project. This is the Care Operations Analytics Command Center — an end-to-end analytics solution for a fictional Canadian care-services provider.
+"Hi, thanks for taking a look at this project. It's the Care Operations Analytics dashboard, built around a fictional Canadian care-services provider.
 
-All data in this project is synthetic and fictional. No real personal, healthcare, client, employee, or company data is used. Every record is generated using the Faker library configured for Canadian locale."
+Just to be clear up front — everything here is synthetic. Every client, worker, funder, and claim is generated with the Faker library set to a Canadian locale. No real data of any kind."
 
 **The Business Problem (15 seconds)**
 
-"The company delivers in-home services funded by multiple funders. Leadership lacked visibility into four key areas: funding utilization and possible budget overruns, claims likely to be rejected or need manual review, operational problems like late documentation and worker-capacity constraints, and aging reconciliation exceptions."
+"The company delivers in-home services funded by several funders, and its leadership couldn't answer four questions: where is funded budget actually going, which claims are likely to get rejected or need a closer look, where are operations slipping — like late documentation or workers over capacity — and which reconciliation exceptions are just sitting there aging."
 
 **The Data Flow (20 seconds)**
 
-"The project follows a clean analytics pipeline. First, synthetic data is generated using Python and Faker. Then, 53 data-quality checks are applied — invalid records are separated and logged, never silently deleted. Clean data is transformed into validated CSV files. These feed a Streamlit dashboard and an interpretable risk-scoring model. Optionally, the data can load into a PostgreSQL star schema for SQL analysis."
+"The pipeline parts are simple. First, synthetic data is generated in Python with Faker. Then 53 data-quality checks run — anything invalid is separated and logged, never quietly deleted. Clean data becomes validated CSV files, and those feed a Streamlit dashboard and an interpretable risk-scoring model. If you want SQL, the same data can load into a PostgreSQL star schema."
 
 **The Dashboard (30 seconds)**
 
-"Let me walk through the four dashboard pages.
+"I'll walk through the four pages.
 
-The **Home page** explains the business problem, shows the data pipeline architecture, and provides a synthetic-data disclaimer.
+The **Home page** explains the business problem, shows the pipeline, and states the synthetic-data disclaimer.
 
-**Executive Overview** shows KPIs — total visits, completed hours, claim dollars, approval rate, open exceptions, and funding-at-risk count. Monthly trend charts help identify where leadership attention is needed first."
+**Executive Overview** puts the headline numbers on one screen — total visits, completed hours, claim dollars, approval rate, open exceptions, and funding at risk — with monthly trends beneath.
 
-"**Funding Health** shows allocation versus approved claim spend by funder, with utilization percentages and a clear flag when allocations reach 90% or more."
+**Funding Health** shows allocation versus approved spend per funder, and flags any allocation at 90% or more.
 
-"**Operations** displays worker capacity utilization, documentation delay trends, and visit status breakdown — helping target staffing and documentation interventions."
+**Operations** covers worker capacity, documentation delays, and visit status.
 
-"**Exceptions and Risk** shows open exception aging, rejection rates by funder, duplicate claim candidates, and a detailed risk-scored claims table."
+And **Exceptions and Risk** brings aging exceptions together with a risk-scored claims table, so you can see what to review first."
 
 **The Risk Model (20 seconds)**
 
-"For claim prioritization, I built an interpretable risk model using Logistic Regression. The model uses pre-decision features like claim amount, documentation delay, late submission flag, and duplicate candidate flag. It categorizes claims into Low, Medium, and High risk bands. This is a prioritization aid — it tells analysts which claims to review first. It does not automatically approve, deny, or determine care decisions."
+"For the claims table, I built a logistic regression that scores each claim from its pre-decision features — claim amount, documentation delay, late submission flag, and duplicate flag. Scores map to Low, Medium, and High bands. This is a triage aid, not a decision engine. It tells an analyst which claims to open first; it doesn't approve or reject anything."
 
 **Closing (15 seconds)**
 
-"To summarize three consulting recommendations based on the actual data: review all allocations at 90% or more utilization immediately, implement documentation SLA monitoring to reduce late submissions, and establish a structured exception triage process. These are evidence-based recommendations derived from the synthetic data."
+"Three recommendations come out of this data: review every allocation at 90% or more utilization, add monitoring around documentation SLAs to cut late submissions, and set up a simple triage process for open exceptions.
 
-"The project is fully documented. You can find the executive summary, model card, dashboard guide, and methodology docs in the docs/ folder. The project runs entirely on processed CSV data — no database is required to see the dashboard in action."
+The docs folder has the executive summary, model card, dashboard guide, and methodology. The dashboard runs entirely off processed CSV files — no database needed to see it work."
 
 ---
 

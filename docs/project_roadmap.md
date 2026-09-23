@@ -8,7 +8,7 @@ The following features are fully implemented and working:
 - **Data quality validation**: 53 reusable checks with audit logging and rejected-record preservation
 - **ETL pipeline**: Python transformation producing validated CSV files
 - **PostgreSQL-ready star schema**: DDL with dimensions, facts, indexes, and foreign keys
-- **SQL analysis**: 8 production-style queries and 8 dashboard views
+- **SQL analysis**: 8 query-based analyses and 8 dashboard views
 - **CSV-first Streamlit dashboard**: 4 interactive pages with Plotly charts and sidebar filters
 - **Interpretable claim-review risk model**: Logistic Regression Pipeline with proper preprocessing
 - **Automated testing**: 46 pytest tests covering all modules

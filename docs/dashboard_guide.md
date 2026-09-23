@@ -49,7 +49,7 @@ All dashboard functionality works with processed CSV files. The `app/data_access
 - Sortable client-funder allocation table with risk flags
 - Highlighted allocations at/above 90% utilization
 
-**Decision supported**: Prioritize proactive funding review and prevent service disruption or unapproved spend.
+**Use it to** spot which allocations to review before they run out of budget.
 
 ### 3. Operations (`app/pages/3_Operations.py`)
 
@@ -61,7 +61,7 @@ All dashboard functionality works with processed CSV files. The `app/data_access
 - Documentation delays by city and service type
 - Visit status breakdown
 
-**Decision supported**: Target staffing and documentation-process interventions before they affect claims and client service.
+**Use it to** see where staffing or documentation support would help before it affects claims and service.
 
 ### 4. Exceptions and Risk (`app/pages/4_Exceptions_and_Risk.py`)
 
@@ -74,7 +74,7 @@ All dashboard functionality works with processed CSV files. The `app/data_access
 - Risk-scored claims table with score, band, and reason summary
 - Risk-band distribution visualization
 
-**Decision supported**: Triage the highest-value and highest-risk claims and exceptions for analyst review.
+**Use it to** put the highest-value, highest-risk claims and exceptions at the top of the review queue.
 
 ---
 

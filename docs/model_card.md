@@ -2,9 +2,7 @@
 
 ## Project/Model Purpose
 
-This is a claim-review risk scoring model designed to help analysts prioritize which claims should be reviewed first. It is part of the Care Operations Analytics portfolio project for a fictional Canadian care-services provider.
-
-**Purpose**: Provide a transparent, interpretable prioritization aid for claim triage.
+A claim-review risk score that helps analysts decide which claims to look at first. It is part of the Care Operations Analytics portfolio project for a fictional Canadian care-services provider.
 
 ---
 
@@ -114,23 +112,15 @@ The model uses **LogisticRegression** which is inherently interpretable:
 
 ---
 
-## Ethical and Privacy Boundaries
+## Why This Is Not a Real Decision Engine
 
-- **No real data**: All data is synthetic. No privacy concerns exist.
-- **No clinical decisions**: The model does not make or influence care decisions.
-- **No automated decisions**: The model provides prioritization suggestions only.
-- **No bias claims**: Synthetic data cannot be used to assess real-world bias.
-- **Transparency**: All features, target definitions, and model parameters are documented.
-
----
-
-## Why It Must Not Be Used as a Real Automated Decision Engine
+The points above are worth repeating in one place because they are the most important caveats:
 
 1. **Synthetic data**: The model has no real-world validation.
-2. **Interpretability limitations**: The reason summary is rule-based, not a true model explanation.
-3. **No human oversight**: Automated claim decisions require human review and accountability.
-4. **Regulatory compliance**: Real claims processing is subject to healthcare regulations that require human oversight.
-5. **Ethical responsibility**: Care services involve vulnerable populations; automated decisions could cause harm.
-6. **Purpose mismatch**: This model was designed for triage prioritization, not automated approval/rejection.
+2. **No human oversight**: Automated claim decisions require human review and accountability.
+3. **Regulatory and ethical responsibility**: Real claims processing is regulated and involves vulnerable populations; automated decisions are not acceptable.
+4. **Purpose mismatch**: It was designed for triage prioritization, not automated approval or rejection.
 
-**This model is a portfolio demonstration tool. It must never be deployed as a production system.**
+There is no real data, no real client, and no production deployment behind this model. It makes no clinical or automated decisions. Privacy is not a concern because every record is fictional.
+
+**This is a portfolio demonstration. It must never be deployed as a production system.**

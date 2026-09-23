@@ -1,6 +1,6 @@
 # Executive Summary
 
-**Care Operations Analytics — Evidence-Based Findings**
+**Care Operations Analytics**
 
 *All data is synthetic and fictional. No real personal, healthcare, client, employee, or company data is used.*
 
@@ -28,37 +28,25 @@ A fictional Canadian care-services provider delivers in-home services funded by 
 
 ### Finding 1: Funding Utilization Risk — High Priority
 
-**Evidence**: Analysis of client-funder allocations reveals that some allocations approach or exceed 90% utilization. With $7,544.73 average allocation and approved claim spend tracked, multiple client-funder pairs are nearing their funding limits. The `funding_at_risk_count` KPI identifies allocations at or above the 90% threshold.
+Several client–funder allocations sit at or above 90% utilization. The `funding_at_risk_count` KPI on the dashboard flags them automatically. With an average allocation around $7,544.73, a full overrun on one allocation is a meaningful dollar amount.
 
-**Implication**: Budget overruns could lead to service disruption or unapproved spend, requiring immediate leadership attention.
-
-**Recommendation**: Prioritize proactive funding review for allocations at ≥90% utilization. Reallocate resources or negotiate additional funding before limits are breached.
-
-**Priority**: High
+If utilization keeps climbing, the likely outcome is service disruption or spend that no one approved. I'd review every allocation at ≥90% first, then reallocate or negotiate additional funding before the limit is actually reached.
 
 ---
 
 ### Finding 2: Documentation Delays Driving Claim Rejections — High Priority
 
-**Evidence**: Of 7,503 service visits, documentation delays are present in a significant subset. Claims linked to delayed documentation show higher rejection rates. The most common rejection reasons include "Late submission beyond SLA" (137 claims), "Missing documentation" (134 claims), and "Inconsistent hours" (130 claims).
+Out of 7,503 service visits, a notable share of claims came with documentation delays, and those claims are rejected more often. The most common rejection reasons are "Late submission beyond SLA" (137 claims), "Missing documentation" (134 claims), and "Inconsistent hours" (130 claims).
 
-**Implication**: Documentation process inefficiencies directly impact revenue cycle performance. Late submissions beyond funder SLA periods result in claim rejections and financial loss.
-
-**Recommendation**: Implement documentation SLA monitoring with automated alerts. Target a 20% reduction in late submissions within the next quarter.
-
-**Priority**: High
+Late submissions past a funder's SLA turn into rejected claims and lost revenue. I'd add monitoring on documentation SLAs with a target of cutting late submissions by roughly 20% in the next quarter.
 
 ---
 
 ### Finding 3: Reconciliation Exceptions Requiring Analyst Triage — Medium Priority
 
-**Evidence**: 300 reconciliation exceptions were generated, with approximately 35% remaining unresolved. High-priority exceptions represent significant financial exposure. The `open_exception_exposure` metric quantifies the total dollar value of open exceptions.
+Of 300 reconciliation exceptions, about 35% were still unresolved. The `open_exception_exposure` metric puts the total dollar value of open exceptions into one number, so the impact is easy to see.
 
-**Implication**: Unresolved exceptions create ongoing financial uncertainty and audit risk.
-
-**Recommendation**: Establish a triage process to resolve high-priority exceptions first. Target resolution within 30 days for medium and 60 days for high priority items.
-
-**Priority**: Medium
+Unresolved exceptions mean financial uncertainty and audit risk. I'd set up a triage queue that works through high-priority exceptions first, with a goal of resolving medium-priority items within 30 days and high-priority items within 60.
 
 ---
 
@@ -70,13 +58,13 @@ A fictional Canadian care-services provider delivers in-home services funded by 
 
 ---
 
-### How I Would Validate This With a Real Client
+### What I'd Verify With a Real Client
 
-1. **Confirm data integrity**: Validate all synthetic mappings against real client systems.
-2. **Interview stakeholders**: Confirm that the identified patterns match operational reality.
-3. **A/B test interventions**: Pilot documentation SLA monitoring in one region before scaling.
-4. **Review funding limits**: Verify allocation thresholds against actual funder contracts.
-5. **Reconcile exception aging**: Cross-reference with actual reconciliation timelines.
+1. **Confirm data integrity**: Check the synthetic client maps against a real client's systems.
+2. **Interview stakeholders**: Make sure the patterns here match their operational reality.
+3. **A/B test interventions**: Pilot documentation SLA monitoring in one region before rolling it out.
+4. **Review funding limits**: Verify the 90% threshold against actual funder contracts.
+5. **Reconcile exception aging**: Cross-reference aging with their actual reconciliation timelines.
 
 ---
 
@@ -88,9 +76,3 @@ A fictional Canadian care-services provider delivers in-home services funded by 
 - Risk model uses logistic regression for interpretability, not maximum accuracy.
 - Documentation delay calculations use generated delay days rather than actual SLA arithmetic.
 - The risk model target definition combines rejection and reconciliation exception flags.
-
----
-
-### Synthetic Data Disclaimer
-
-**All data in this project is entirely synthetic and fictional.** No real personal, healthcare, client, employee, or company data is used. This project is intended for portfolio demonstration and analytics education purposes only.
