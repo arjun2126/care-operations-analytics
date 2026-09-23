@@ -68,21 +68,25 @@ All data used to train, evaluate, and deploy this model is entirely synthetic an
 ## Evaluation Method and Metrics
 
 ### Method
-- **Model**: Logistic Regression with `class_weight="balanced"`
-- **Preprocessing**: StandardScaler for numeric features
+- **Model**: Logistic Regression with `class_weight="balanced"` in a sklearn Pipeline
+- **Preprocessing**: ColumnTransformer with StandardScaler for numeric features and OneHotEncoder(handle_unknown="ignore") for categorical features
 - **Split**: 75/25 train/test split with stratification
 - **Seed**: Random seed = 42 (deterministic)
 
-### Metrics
+### Metrics (test set)
 | Metric | Value |
 |--------|-------|
-| Precision | Model-dependent |
-| Recall | Model-dependent |
-| F1 Score | Model-dependent |
-| ROC-AUC | Model-dependent |
-| Confusion Matrix | Model-dependent |
+| Precision | 0.632 |
+| Recall | 0.299 |
+| F1 Score | 0.406 |
+| ROC-AUC | 0.675 |
+| Train samples | 5,442 |
+| Test samples | 1,815 |
+| Positive class | 1,057 |
+| Negative class | 6,200 |
+| Confusion matrix | TN=1,505, FP=46, FN=185, TP=79 |
 
-**Note**: Metrics are calculated on a held-out test set. If the dataset does not support both classes, the model gracefully handles the edge case and returns no results.
+**Note**: The model has modest recall, meaning it identifies a limited proportion of actual high-risk claims. This is expected with synthetic data and a balanced model prioritizing interpretability over raw performance.
 
 ---
 

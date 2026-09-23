@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  verify:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,9 +18,23 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Python compilation and import check
+        run: |
+          python -m py_compile src/*.py app/*.py app/pages/*.py
+          PYTHONPATH=src python3 -c "import config, generate_data, quality_checks, transform, pipeline, analytics_metrics, feature_engineering, risk_model; print('All src imports OK')"
+          PYTHONPATH=. python3 -c "import sys; sys.path.insert(0, '.'); from app.data_access import load_processed_data; from app.components import *; print('All app imports OK')"
+      - name: Run pipeline
+        run: |
+          PYTHONPATH=src python3 -m src.pipeline
+      - name: Run risk model
+        run: |
+          PYTHONPATH=src python3 -m src.risk_model
       - name: Run tests
         run: |
-          pytest tests/ -v
-      - name: Verify data generation
+          PYTHONPATH=src python3 -m pytest tests/ -q
+      - name: Verify data files exist
         run: |
-          PYTHONPATH=src python3 -c "from src.generate_data import generate_all_data; data = generate_all_data(); print(f'Generated {len(data)} datasets')"
+          test -f data/processed/clients.csv
+          test -f data/processed/claims.csv
+          test -f data/processed/service_visits.csv
+          echo "All processed data files present"

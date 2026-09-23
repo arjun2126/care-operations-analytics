@@ -6,6 +6,20 @@
 
 ---
 
+### Results at a Glance
+
+Computed from the processed datasets:
+
+- **Total visits**: 7,500
+- **Total claim dollars**: C$1,383,161.09
+- **Approval rate**: 60.0%
+- **Open exceptions**: 223 with C$1,653,941.11 exposure
+- **Risk model**: Precision 0.632, Recall 0.299, F1 0.406, ROC-AUC 0.675
+
+The model is a prioritization aid, not an automated decision system.
+
+---
+
 ### Context
 
 A fictional Canadian care-services provider delivers in-home services funded by 6 funders across 25 cities. The dataset covers 300 clients, 110 workers, 7,500+ service visits, and 7,257 claims over 12 months (2024). This summary presents three prioritized findings derived from actual computed data.

@@ -1,15 +1,18 @@
+from typing import Optional
 import os
 import joblib
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import (
     precision_score, recall_score, f1_score, roc_auc_score,
-    confusion_matrix,
+    confusion_matrix, classification_report,
 )
-from src.feature_engineering import build_risk_features, get_risk_feature_columns, encode_categorical_features
+from src.feature_engineering import build_risk_features, get_risk_feature_columns, get_risk_categorical_columns
 from src.config import config
 
 RANDOM_SEED = config.random_seed
@@ -19,8 +22,13 @@ MODEL_PATH = os.path.join(PROCESSED_DIR, "risk_model")
 METRICS_PATH = os.path.join(PROCESSED_DIR, "risk_model_metrics.csv")
 SCORES_PATH = os.path.join(PROCESSED_DIR, "risk_scores.csv")
 
+NUMERIC_FEATURES = get_risk_feature_columns()
+CATEGORICAL_FEATURES = get_risk_categorical_columns()
+ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+
 
 def _load_claims_data() -> pd.DataFrame:
+    """Load claims and join with visits and funders for model features."""
     claims_path = os.path.join(PROCESSED_DIR, "claims.csv")
     visits_path = os.path.join(PROCESSED_DIR, "service_visits.csv")
     funders_path = os.path.join(PROCESSED_DIR, "funders.csv")
@@ -42,7 +50,8 @@ def _load_claims_data() -> pd.DataFrame:
     return merged
 
 
-def _build_model_data() -> "Optional[Tuple[pd.DataFrame, pd.Series, pd.DataFrame]]":
+def _build_model_data() -> Optional[tuple]:
+    """Load and prepare model data. Returns (X, y, df_model) or None."""
     claims = _load_claims_data()
     if claims.empty or len(claims) < 10:
         return None
@@ -51,54 +60,78 @@ def _build_model_data() -> "Optional[Tuple[pd.DataFrame, pd.Series, pd.DataFrame
     if df.empty:
         return None
 
-    feature_cols = get_risk_feature_columns()
-    existing_features = [c for c in feature_cols if c in df.columns]
+    # Build numeric + categorical features
+    df_model = df.copy()
+    for cat_col in CATEGORICAL_FEATURES:
+        if cat_col not in df_model.columns:
+            df_model[cat_col] = "Unknown"
 
-    df_encoded = encode_categorical_features(df)
-    available_features = [c for c in existing_features if c in df_encoded.columns]
-
-    if len(available_features) < 2:
+    # Check that all required columns exist
+    missing = [c for c in ALL_FEATURES if c not in df_model.columns]
+    if missing:
         return None
 
-    X = df_encoded[available_features].fillna(0)
-    y = df_encoded["is_high_risk_target"].astype(int)
+    X = df_model[ALL_FEATURES].fillna(0)
+    # Replace any inf values with finite numbers
+    X = X.replace([np.inf, -np.inf], 0)
+    # Clip extreme values for numerical stability
+    for col in NUMERIC_FEATURES:
+        if col in X.columns:
+            X[col] = X[col].clip(lower=-100, upper=100)
+    y = df_model["is_high_risk_target"].astype(int)
 
     if y.sum() == 0 or y.sum() == len(y):
         return None
 
-    return X, y, df_encoded
+    return X, y, df_model
 
 
-def train_model() -> "Optional[dict]":
+def build_pipeline() -> Pipeline:
+    """Build sklearn Pipeline with ColumnTransformer for preprocessing."""
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", StandardScaler(), NUMERIC_FEATURES),
+            ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), CATEGORICAL_FEATURES),
+        ],
+        remainder="drop",
+    )
+
+    pipeline = Pipeline([
+        ("preprocessor", preprocessor),
+        ("classifier", LogisticRegression(
+            class_weight="balanced",
+            random_state=RANDOM_SEED,
+            max_iter=2000,
+            solver="lbfgs",
+            C=1.0,
+        )),
+    ])
+    return pipeline
+
+
+def train_model() -> Optional[dict]:
+    """Train the risk model using a proper Pipeline with train/test split before preprocessing."""
     result = _build_model_data()
     if result is None:
         return None
 
-    X, y, df_encoded = result
-    feature_cols = [c for c in X.columns]
+    X, y, df_model = result
+    feature_cols = ALL_FEATURES
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.25, random_state=RANDOM_SEED, stratify=y
     )
 
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    pipeline = build_pipeline()
+    pipeline.fit(X_train, y_train)
 
-    model = LogisticRegression(
-        class_weight="balanced",
-        random_state=RANDOM_SEED,
-        max_iter=1000,
-    )
-    model.fit(X_train_scaled, y_train)
-
-    y_pred = model.predict(X_test_scaled)
-    y_prob = model.predict_proba(X_test_scaled)[:, 1]
+    y_pred = pipeline.predict(X_test)
+    y_prob = pipeline.predict_proba(X_test)[:, 1]
 
     metrics = {
-        "precision": round(precision_score(y_test, y_pred), 4),
-        "recall": round(recall_score(y_test, y_pred), 4),
-        "f1": round(f1_score(y_test, y_pred), 4),
+        "precision": round(precision_score(y_test, y_pred, zero_division=0), 4),
+        "recall": round(recall_score(y_test, y_pred, zero_division=0), 4),
+        "f1": round(f1_score(y_test, y_pred, zero_division=0), 4),
         "roc_auc": round(roc_auc_score(y_test, y_prob), 4) if len(set(y_test)) == 2 else None,
         "train_samples": len(X_train),
         "test_samples": len(X_test),
@@ -114,68 +147,70 @@ def train_model() -> "Optional[dict]":
     metrics["confusion_matrix_tp"] = int(cm[1][1])
 
     return {
-        "model": model,
-        "scaler": scaler,
-        "feature_cols": feature_cols,
+        "pipeline": pipeline,
         "metrics": metrics,
-        "df_encoded": df_encoded,
+        "df_model": df_model,
+        "feature_cols": feature_cols,
     }
 
 
-def generate_risk_scores() -> "Optional[pd.DataFrame]":
+def generate_risk_scores() -> Optional[pd.DataFrame]:
+    """Generate risk scores for all claims using the trained pipeline."""
     result = _build_model_data()
     if result is None:
         return None
 
-    X, y, df_encoded = result
+    X, y, df_model = result
     model_data = train_model()
     if model_data is None:
         return None
 
-    model = model_data["model"]
-    scaler = model_data["scaler"]
-    feature_cols = model_data["feature_cols"]
+    pipeline = model_data["pipeline"]
+    risk_scores = pipeline.predict_proba(X)[:, 1]
 
-    X_scaled = scaler.transform(X[feature_cols].fillna(0))
-    risk_scores = model.predict_proba(X_scaled)[:, 1]
-
-    df_encoded["risk_score"] = np.round(risk_scores, 4)
-    df_encoded["risk_band"] = pd.cut(
-        df_encoded["risk_score"],
+    df_model["risk_score"] = np.round(risk_scores, 4)
+    df_model["risk_band"] = pd.cut(
+        df_model["risk_score"],
         bins=[-0.01, 0.35, 0.65, 1.01],
         labels=["Low", "Medium", "High"],
         right=True,
     ).astype(str)
 
+    # Build human-readable reason summaries
     reason_parts = []
-    if "documentation_delay_days" in df_encoded.columns:
-        reason_parts.append(pd.cut(
-            df_encoded["documentation_delay_days"].fillna(0),
+    if "documentation_delay_days" in df_model.columns:
+        delay_bins = pd.cut(
+            df_model["documentation_delay_days"].fillna(0),
             bins=[-1, 0, 5, 15, 100],
             labels=["No delay", "Minor delay (1-5d)", "Moderate delay (6-15d)", "Severe delay (>15d)"],
-        ).astype(str))
-    if "submitted_late_flag" in df_encoded.columns:
-        reason_parts.append(df_encoded["submitted_late_flag"].map({True: "Late submission", False: "On-time"}).astype(str))
-    if "duplicate_candidate_flag" in df_encoded.columns:
-        reason_parts.append(df_encoded["duplicate_candidate_flag"].map({True: "Duplicate candidate", False: "No duplicate flag"}).astype(str))
-    if "claim_amount" in df_encoded.columns:
-        reason_parts.append(pd.cut(
-            df_encoded["claim_amount"].fillna(0),
+        ).astype(str)
+        reason_parts.append(delay_bins)
+    if "submitted_late_flag" in df_model.columns:
+        reason_parts.append(df_model["submitted_late_flag"].map({True: "Late submission", False: "On-time"}).astype(str))
+    if "duplicate_candidate_flag" in df_model.columns:
+        reason_parts.append(df_model["duplicate_candidate_flag"].map({True: "Duplicate candidate", False: "No duplicate flag"}).astype(str))
+    if "claim_amount" in df_model.columns:
+        amt_bins = pd.cut(
+            df_model["claim_amount"].fillna(0),
             bins=[-1, 0, 200, 500, 10000],
             labels=["Low value", "Medium value", "High value", "Very high value"],
-        ).astype(str))
-    if "funding_type" in df_encoded.columns:
-        reason_parts.append(df_encoded["funding_type"].fillna("Unknown").map({
+        ).astype(str)
+        reason_parts.append(amt_bins)
+    if "funding_type" in df_model.columns:
+        funder_map = df_model["funding_type"].fillna("Unknown").map({
             "Provincial": "Provincial funder", "Federal": "Federal funder",
             "Municipal": "Municipal funder", "Private Insurance": "Private insurance",
             "Unknown": "Unknown funder"
-        }).astype(str))
+        }).astype(str)
+        reason_parts.append(funder_map)
 
     reason_df = pd.DataFrame({f"part_{i}": part for i, part in enumerate(reason_parts)})
-    df_encoded["reason_summary"] = reason_df.apply(lambda row: "; ".join([str(v) for v in row if str(v) != "nan"]), axis=1)
-    df_encoded["reason_summary"] = df_encoded["reason_summary"].replace("", "Standard review")
+    df_model["reason_summary"] = reason_df.apply(
+        lambda row: "; ".join([str(v) for v in row if str(v) != "nan"]), axis=1
+    )
+    df_model["reason_summary"] = df_model["reason_summary"].replace("", "Standard review")
 
-    output = df_encoded[[
+    output = df_model[[
         "claim_id", "client_id", "funder_id", "claim_amount", "claim_status",
         "risk_score", "risk_band", "reason_summary", "is_high_risk_target",
     ]].copy()
@@ -185,6 +220,7 @@ def generate_risk_scores() -> "Optional[pd.DataFrame]":
 
 
 def save_model_outputs() -> dict:
+    """Train model and save outputs to processed directory."""
     model_data = train_model()
     if model_data is None:
         return {"success": False, "error": "Could not build model data"}
@@ -195,8 +231,7 @@ def save_model_outputs() -> dict:
 
     try:
         os.makedirs(PROCESSED_DIR, exist_ok=True)
-        joblib.dump(model_data["model"], MODEL_PATH + ".joblib")
-        joblib.dump(model_data["scaler"], PROCESSED_DIR + "/risk_scaler.joblib")
+        joblib.dump(model_data["pipeline"], MODEL_PATH + ".joblib")
         risk_df.to_csv(SCORES_PATH, index=False)
 
         metrics_df = pd.DataFrame([model_data["metrics"]])
@@ -213,6 +248,7 @@ def save_model_outputs() -> dict:
 
 
 def run_risk_model():
+    """Entry point for python -m src.risk_model."""
     import logging
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
