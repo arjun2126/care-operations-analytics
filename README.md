@@ -10,11 +10,11 @@
 
 The following screenshots show the working local Streamlit dashboard:
 
-![Home dashboard](dashboard/screenshots/home.jpg)
-![Executive Overview dashboard](dashboard/screenshots/executive-overview.jpg)
-![Funding Health dashboard](dashboard/screenshots/funding-health.jpg)
-![Operations dashboard](dashboard/screenshots/operations.jpg)
-![Exceptions and Risk dashboard](dashboard/screenshots/exceptions-risk.jpg)
+![Home dashboard](dashboard/screenshots/home.png)
+![Executive Overview dashboard](dashboard/screenshots/executive-overview.png)
+![Funding Health dashboard](dashboard/screenshots/funding-health.png)
+![Operations dashboard](dashboard/screenshots/operations.png)
+![Exceptions and Risk dashboard](dashboard/screenshots/exceptions-risk.png)
 
 ---
 
@@ -43,23 +43,21 @@ A fictional Canadian care-services provider delivers in-home services funded by 
 
 ---
 
-## Architecture
+## Architecture Overview
 
-```mermaid
-graph TD
-    A[Python Faker] -->|Generate| B(Raw CSV Files)
-    B --> C{Data Quality Checks}
-    C -->|Pass| D[Cleaned CSV Files]
-    C -->|Fail| E[Rejected Records Log]
-    D --> F[PostgreSQL Star Schema]
-    D --> G[Streamlit Dashboard]
-    D --> H[Risk Model]
-    G --> I[Executive Overview]
-    G --> J[Funding Health]
-    G --> K[Operations]
-    G --> L[Exceptions & Risk]
-    H --> M[Risk Scores]
+The project follows a standard analytics pipeline:
+
 ```
+Raw Synthetic Data → Data Quality Validation → Transformation/Cleaning → Processed CSV Files → PostgreSQL-Ready Star Schema + SQL Views → Streamlit Dashboard → Claim-Review Risk Prioritization
+```
+
+1. **Generate** raw synthetic datasets using Faker with Canadian context
+2. **Validate** data quality with reusable, configurable checks
+3. **Clean** records, separating valid from invalid with full audit logging
+4. **Transform** into validated processed CSV files
+5. **Load** into a PostgreSQL-ready star schema (dimensions + facts) with SQL views — optional, CSV-first by default
+6. **Visualize** funding, operations, exceptions, and risk in the Streamlit dashboard
+7. **Prioritize** claim review with the logistic-regression risk score (Low/Medium/High)
 
 Full architecture explanation: [docs/architecture.md](docs/architecture.md)
 
