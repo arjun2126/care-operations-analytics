@@ -239,3 +239,52 @@ See [docs/project_roadmap.md](docs/project_roadmap.md) for details.
 ## Risk-Model Caveat
 
 The claim-review risk score is a triage aid trained on synthetic data. It does not automatically approve, deny, or determine care decisions. Metrics are modest and reflect the limitations of synthetic data.
+
+---
+
+## Business Intelligence Dashboards
+
+### Power BI: Care Portfolio Analytics
+
+Interactive Power BI dashboard built from synthetic service-visit data for analyzing care-delivery operations.
+
+**Business questions addressed**
+- How does service-visit volume change by month?
+- Which service types have the highest visit volume?
+- How many completed service hours were delivered?
+- Where do scheduled and completed hours differ by service type?
+
+**Dashboard features**
+- KPI cards for total service visits and total completed hours
+- Monthly service-visit trend analysis
+- Service visits by type comparison
+- Scheduled-versus-completed hours comparison
+- Interactive service-type slicer
+- Visit-level detail table
+
+**Skills demonstrated:** Power BI, KPI design, data aggregation, time-series analysis, interactive filtering, operational reporting, dashboard layout.
+
+![Care Portfolio Analytics dashboard overview](dashboard/screenshots/care-portfolio-analytics-dashboard-overview.png)
+
+![Scheduled vs completed service hours](dashboard/screenshots/care-portfolio-analytics-service-delivery-comparison.png)
+
+![Service type filtering example](dashboard/screenshots/care-portfolio-analytics-service-type-filtered.png)
+
+Workbook: [`Care Portfolio Analytics.pbix`](<bi:Tableau/Care%20Portfolio%20Analytics.pbix>)
+
+### Tableau: Care Operations Executive Pulse
+
+Tableau executive dashboard that presents a high-level operational view of care-service performance, funding health, exceptions, and delivery activity.
+
+**Dashboard purpose**
+- Give leadership a consolidated view of operational performance.
+- Surface key service-delivery and funding indicators.
+- Support investigation of exceptions and operational risks.
+
+**Skills demonstrated:** Tableau, executive dashboard design, KPI visualization, operational analytics, visual storytelling.
+
+![Care Operations Executive Pulse Tableau dashboard](dashboard/screenshots/tableau-executive-pulse.png)
+
+Workbook: [`Care Operations Executive Pulse.twbx`](<bi:Tableau/Care%20Operations%20Executive%20Pulse.twbx>)
+
+> All dashboard data is synthetic and intended solely for portfolio demonstration. No real client or patient data is included.
