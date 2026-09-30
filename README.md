@@ -214,8 +214,6 @@ care-operations-analytics/
 - [Data Dictionary](docs/data_dictionary.md) — All fields and relationships
 - [Architecture](docs/architecture.md) — System design and Mermaid diagram
 - [Methodology](docs/methodology.md) — Assumptions and known limitations
-- [Demo Script](docs/demo_script.md) — 2-minute walkthrough script
-- [Interview Talking Points](docs/interview_talking_points.md) — Common questions and answers
 - [Project Roadmap](docs/project_roadmap.md) — Implemented vs future features
 
 ---
